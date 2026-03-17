@@ -13,8 +13,9 @@ description: Create MoTion patterns in Pharo to match FAST models. Use when a us
 - TypeScript AST: `references/FASTTypeScript-MoTion.md`
 - XML AST: `references/FASTXML-MoTion.md`
 - Java AST: `references/FASTJava-MoTion.md`
-4. Build or revise the pattern in Pharo syntax.
-5. Return the pattern and a short explanation of key selectors/operators used.
+4. If the user does not know where to find or install the repositories needed for MoTion or the FAST libraries, direct them to the Repositories.md file, which explains how to obtain and install the correct repositories.
+5. Build or revise the pattern in Pharo syntax.
+6. Return the pattern and a short explanation of key selectors/operators used.
 
 ## Domain Routing
 
@@ -45,3 +46,4 @@ Always treat these files as source of truth:
 - `references/FASTTypeScript-MoTion.md`
 - `references/FASTXML-MoTion.md`
 - `references/FASTJava-MoTion.md`
+- `references/Repositories.md` (for locating required repositories)
