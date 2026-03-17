@@ -83,6 +83,7 @@ This pattern will match first an instance of ClassA, then the object in its prop
 
 13. It is possible to match Complex lists using the “{}” list operator and declaring how the list should look like. Note that this is not the same operator as “\% {}” (see above). This operator allows to express that given elements in a list should match specific patterns. 
 {\#’@x’. \#’@x’} This pattern matches a list containing exactly two elements that are the same (use of a named variable).
+
 14. The repetition operator (“*”) may also be used in a list to indicate an unspecified number of elements.
 {#’@x’. #’*_’. #’@x’} This pattern, matches a list with first and last elements equals and of unspecified length (obviously at least 2).
 To express that one element is part of a collection, MoTion offers a shortcut. To check if the value 5 is part of a collection (contained in the property someProperty of an instance of ClassA) one can use the pattern:
@@ -99,7 +100,29 @@ ClassA % {
 ```
 Note that this could also match an instance of ClassA with a property someProperty that matches exactly the value 5 (with no collection).
 
-15. Finally there is another operator for Logical matcher:  orMatches:. It allows to express a disjunction of two patterns (one or the other match). (Remember that “\% {}” implements a conjunction of patterns within the curly braces.)
+15. Set matcher is also included. It does the same thing as list matcher but without taking into consideration the order of the elements. For example:
+```Smalltalk
+"A pattern can be expressed this way using set matcher:"
+pattern := { 2. 1. 'a'} orderIgnored.
+result := pattern match: #( 1 2 'a').
+```
+In the above example, result will return a match, because even if order is not respected, the same elements can be found in the array that is matched with the defined pattern.
+The below example also works for a set matcher inside an object matcher:
+```Smalltalk
+pattern := MTTestObjectA % {
+			    #lst <=> { 1. 2. #’*others’} orderIgnored 
+		    }.
+a1 := MTTestObjectA new.
+a1 lst add: 2.
+a1 lst add: 1. 
+a1 lst add: 3.
+a1 lst add: 4.
+	
+result := pattern match: a1.
+```
+Result will return a match.
+
+16. Finally there is another operator for Logical matcher:  orMatches:. It allows to express a disjunction of two patterns (one or the other match). (Remember that “\% {}” implements a conjunction of patterns within the curly braces.)
 ```Smalltalk
 ClassA % {
 #someProperty <=> (5 orMatches: 6)
@@ -221,7 +244,4 @@ pattern match: anXMLNodeList.
 ```
 
 ## Finally
-
-Don't hesitate to ask. More examples can be found in tests package. 
-Also, don't hesitate to have a look at Iguala which is the same matcher implemented in Python:  https://github.com/aranega/iguala
 Finally, well, just enjoy it :) 
