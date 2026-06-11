@@ -1,0 +1,50 @@
+# Display name shown in the Actions tab
+name: Sync MoTion README
+
+# Events that trigger this workflow
+on:
+  # Trigger 1: run on a timer
+  schedule:
+    # min hour dom mon dow -> 06:00 UTC daily (UTC, may be delayed)
+    - cron: '0 6 * * *'
+  # Trigger 2: adds a manual "Run workflow" button
+  workflow_dispatch:
+
+jobs:
+  # Job ID (arbitrary name)
+  sync:
+    # Run on a fresh GitHub-hosted Linux VM
+    runs-on: ubuntu-latest
+    # Least-privilege scope for the auto GITHUB_TOKEN
+    permissions:
+      # Needed to push the branch/commit with the updated file
+      contents: write
+      # Needed to open the pull request below
+      pull-requests: write
+    steps:
+      # Check out THIS repo so references/MoTion.md exists locally
+      - uses: actions/checkout@v4
+
+      - name: Fetch latest README from MoTion
+        # "|" = multi-line shell script
+        run: |
+          # Download upstream README and overwrite the local skills file
+          curl -fsSL https://raw.githubusercontent.com/moosetechnology/MoTion/main/ReadME.md \
+            -o references/MoTion.md
+          # Remove the CI badge line (it only makes sense in the MoTion repo)
+          sed -i '/!\[Latest Moose\]/d' references/MoTion.md
+
+      - name: Open a PR if anything changed
+        # Commits changes + opens a PR (no-op if nothing changed)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          # Commit message used for the synced change
+          commit-message: "docs: sync references/MoTion.md from upstream ReadME.md"
+          # Dedicated branch, reused on later runs
+          branch: sync/motion-readme
+          # PR title
+          title: "Sync references/MoTion.md from MoTion ReadME.md"
+          # "|" preserves the multi-line PR description
+          body: |
+            Automated sync of `references/MoTion.md` from
+            [moosetechnology/MoTion `ReadME.md`](https://github.com/moosetechnology/MoTion/blob/main/ReadME.md).
