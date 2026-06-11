@@ -4,13 +4,14 @@ MoTion is a new object pattern matcher in Pharo. A pattern matcher works on a fi
 MoTion can deal with Pharo objects independently of the model containing the data. 
 MoTion combines both features for graph pattern matching and object matching, and by that it enables expressing patterns declaratively and applying matches over complex object structures.
 
+
 ## Installation
 To install MoTion, go to the Playground (`Ctrl+OW`) in your Pharo image and execute the following Metacello script (select it and press Do-it button or `Ctrl+D`):
 
 ```Smalltalk
 Metacello new
     baseline: 'MoTion';
-    repository: 'github://alesshosry/MoTion:main';
+    repository: 'github://moosetechnology/MoTion:main';
     load.
 ```
 
@@ -64,7 +65,7 @@ ClassA % {
 ```
 This pattern first match an instance of ClassA, then it takes the object in its property1 and the value in property2 of this second object. This value should match aValue. This notation allows to express in a very concise way a path in a graph of objects. Note that this operator is also polymorphic. Similarly to “<=>”, if one of the objects in the path is a collection, the operator will look for an element of this collection that allows to continue the search, that is to say that has a property matching the remaining part of the pattern.
 
-11. MoTion allows to perform Recursive traversal through a “*” operator combined with the Path traversal operator “>”. In a chain of objects, one may know the initial property and the final one, but not know how long the chain of objects is.
+11.1 MoTion allows to perform Recursive traversal through a “*” operator combined with the Path traversal operator “>”. In a chain of objects, one may know the initial property and the final one, but not know how long the chain of objects is.
 ```Smalltalk
 ClassA % {
 #’property1>repeatedProp*’ <=> aValue.
@@ -72,6 +73,14 @@ ClassA % {
 ```
 This pattern will match first an instance of ClassA, then the object in its property property1 then it will match a chain of objects all having a property repeatedProp and one of them containing the value aValue. The match ends on this last
 object.
+
+11.2 MoTion allows to perform Limited Recursive traversal through a “*Number” operator combined with the Path traversal operator “>”. In a chain of objects, one may know the initial property and the final one, but not know how long the chain of objects is. Also to avoid looking infinitly (specially when we have loops for properties pointing to each others). 
+```Smalltalk
+ClassA % {
+#’property1>repeatedProp*3’ <=> aValue.
+}
+```
+This pattern will matches ans stops on the 3rd layer, whether ther is or isn't a match. 
 
 12. The “*” operator may also be combined with a wildcard (“_”).
 ```Smalltalk
@@ -83,7 +92,6 @@ This pattern will match first an instance of ClassA, then the object in its prop
 
 13. It is possible to match Complex lists using the “{}” list operator and declaring how the list should look like. Note that this is not the same operator as “\% {}” (see above). This operator allows to express that given elements in a list should match specific patterns. 
 {\#’@x’. \#’@x’} This pattern matches a list containing exactly two elements that are the same (use of a named variable).
-
 14. The repetition operator (“*”) may also be used in a list to indicate an unspecified number of elements.
 {#’@x’. #’*_’. #’@x’} This pattern, matches a list with first and last elements equals and of unspecified length (obviously at least 2).
 To express that one element is part of a collection, MoTion offers a shortcut. To check if the value 5 is part of a collection (contained in the property someProperty of an instance of ClassA) one can use the pattern:
@@ -99,7 +107,6 @@ ClassA % {
 }
 ```
 Note that this could also match an instance of ClassA with a property someProperty that matches exactly the value 5 (with no collection).
-
 15. Set matcher is also included. It does the same thing as list matcher but without taking into consideration the order of the elements. For example:
 ```Smalltalk
 "A pattern can be expressed this way using set matcher:"
@@ -129,6 +136,15 @@ ClassA % {
 }
 ```
 This pattern matches an instance of ClassA with a property someProperty matching the value 5 or the value 6.
+
+17. Comparison to Numbers can be applied now after the conribution of @AminRannen, using operators like: #higherThan:, #lowerThan:, lessOrEqualTo: and higherOrEqualTo:
+    For example:
+```Smalltalk
+ClassA % {
+   #someProperty higherThan: 10
+}
+```
+
 
 ## How to use the matcher
 
@@ -244,4 +260,8 @@ pattern match: anXMLNodeList.
 ```
 
 ## Finally
-Finally, well, just enjoy it :) 
+
+Don't hesitate to ask. More examples can be found in tests package. 
+Also if you are not familiar with MoTion, using it for the first time, no worries; here are some pages with examples: https://github.com/alesshosry/MoTionPatternsBookForAI. You can check them OR provide the files to AI agents so they can create the patterns for you ;) 
+Also, don't hesitate to have a look at Iguala which is the same matcher implemented in Python:  https://github.com/aranega/iguala
+Finally, well, just enjoy it :)  
